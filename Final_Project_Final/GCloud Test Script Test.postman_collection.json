@@ -1,0 +1,1987 @@
+{
+	"info": {
+		"_postman_id": "fb136e2a-ceae-4ac1-9b19-e0695263e71c",
+		"name": "GCloud Test Script Test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "POST User Correct",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "a1f071e5-bc7d-4378-accc-26a89591779d",
+						"type": "text/javascript",
+						"exec": [
+							"pm.sendRequest(postman.getGlobalVariable(\"link\") +\"/user\", function (err, res){",
+							"    var responseJSON = res.json();",
+							"    var count = responseJSON.length;",
+							"    pm.globals.set(\"previousUserCount\", count)",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "25928f69-75f1-4505-94f3-2cf198437cca",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Response Status is 201\"] = responseCode.code === 201;",
+							"",
+							"pm.test(\"User Count Was Incremented\", function(){",
+							"    pm.sendRequest(postman.getGlobalVariable(\"link\") +\"/user\", function (err, res){",
+							"    var responseJSON = res.json();",
+							"    newCount = responseJSON.length;",
+							"    var previousCount = pm.globals.get(\"previousUserCount\");",
+							"    pm.expect(newCount).to.equal(previousCount + 1);",
+							"    pm.globals.unset(\"previousUserCount\");",
+							"    });",
+							"});",
+							"",
+							"//Returns Request Data as an Object",
+							"let requestData = JSON.parse(request.data);",
+							"",
+							"",
+							"let response = JSON.parse(responseBody);",
+							"",
+							"",
+							"tests[\"User First Name is Correct\"] = response[\"fname\"] === requestData[\"fname\"];",
+							"",
+							"tests[\"User Last Name is Correct\"] = response[\"lname\"] === requestData[\"lname\"];",
+							"",
+							"tests[\"Email is Correct\"] = response[\"email\"] === requestData[\"email\"];",
+							"",
+							"tests[\"Access Token is Correct\"] = response[\"access_token\"] === requestData[\"access_token\"];",
+							"",
+							"tests[\"User URL is Correct\"] = response[\"userURL\"] === requestData[\"userURL\"];",
+							"",
+							"pm.globals.set(\"POST_CORRECT_userID\", response[\"id\"]);",
+							"",
+							"pm.globals.set(\"POST_CORRECT_clientSecret\", response[\"access_token\"]);",
+							"",
+							"pm.globals.set(\"POST_CORRECT_userfName\", response[\"fname\"]);",
+							"",
+							"pm.globals.set(\"POST_CORRECT_userlName\", response[\"lname\"]);",
+							"",
+							"pm.globals.set(\"POST_CORRECT_userEmail\", response[\"email\"]);",
+							"",
+							"pm.globals.set(\"POST_CORRECT_user_URL\", response[\"userURL\"]);"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"fname\": \"Derek\",\n    \"lname\": \"Sun\",\n    \"email\": \"sunde@oregonstate.edu\",\n    \"access_token\": \"Password\",\n    \"userURL\": \"google.com\"\n}"
+				},
+				"url": {
+					"raw": "{{link}}/user",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"user"
+					]
+				},
+				"description": "Post User With Correct Data Manually"
+			},
+			"response": []
+		},
+		{
+			"name": "POST User Incorrect Data",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "5183338f-2f22-48b5-8a55-2d466fd5f5ce",
+						"type": "text/javascript",
+						"exec": [
+							"pm.sendRequest(postman.getGlobalVariable(\"link\") +\"/user\", function (err, res){",
+							"    var responseJSON = res.json();",
+							"    var count = responseJSON.length;",
+							"    pm.globals.set(\"previousUserCount\", count)",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "65c821f4-f266-49b2-a5bb-0837d541ede7",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Response Status is 400\"] = responseCode.code === 400;",
+							"",
+							"pm.test(\"User Count Was Not Incremented\", function(){",
+							"    pm.sendRequest(postman.getGlobalVariable(\"link\") +\"/user\", function (err, res){",
+							"    var responseJSON = res.json();",
+							"    newCount = responseJSON.length;",
+							"    var previousCount = pm.globals.get(\"previousUserCount\");",
+							"    pm.expect(newCount).to.equal(previousCount);",
+							"    pm.globals.unset(\"previousUserCount\");",
+							"    });",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"fname\": \"Derek\",\n    \"lname\": \"Sun\",\n    \"email\": \"sunde@oregonstate.edu\",\n    \"access_token\": \"Password\"\n}"
+				},
+				"url": {
+					"raw": "{{link}}/user",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"user"
+					]
+				},
+				"description": "POST User With Incorrect Data Manually"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Specific User Correct",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "45a9a673-3a01-47e4-bb77-80f27c575ff9",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"let response = JSON.parse(responseBody);",
+							"",
+							"tests[\"User First Name is Correct\"] = response[\"fname\"] === pm.globals.get(\"POST_CORRECT_userfName\");",
+							"",
+							"tests[\"User Last Name is Correct\"] = response[\"lname\"] === pm.globals.get(\"POST_CORRECT_userlName\");",
+							"",
+							"tests[\"Email is Correct\"] = response[\"email\"] === pm.globals.get(\"POST_CORRECT_userEmail\");",
+							"",
+							"tests[\"User URL is Correct\"] = response[\"userURL\"] === pm.globals.get(\"POST_CORRECT_user_URL\");"
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{POST_CORRECT_clientSecret}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{link}}/user/{{POST_CORRECT_userID}}",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"user",
+						"{{POST_CORRECT_userID}}"
+					]
+				},
+				"description": "Response Status is 200"
+			},
+			"response": []
+		},
+		{
+			"name": "Get All User Correct",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "3f3b889e-a006-4b7e-a61b-c8594d33837a",
+						"type": "text/javascript",
+						"exec": [
+							"pm.sendRequest(postman.getGlobalVariable(\"link\") +\"/user\", function (err, res){",
+							"    var responseJSON = res.json();",
+							"    var count = responseJSON.length;",
+							"    pm.globals.set(\"previousUserCount\", count)",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "1e4952ac-60a6-440a-a346-5881f50e22f1",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Response Status is 200\"] = responseCode.code === 200;"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{link}}/user",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"user"
+					]
+				},
+				"description": "Status Code Return 200"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Specific User 403",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "38b13018-b951-4904-b53d-e8c6ff0d44cb",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status Code 403\"] = responseCode.code === 403;"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{link}}/user/{{POST_CORRECT_userID}}",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"user",
+						"{{POST_CORRECT_userID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Specific User 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "68f589fa-34b7-439f-8af7-61ce0330b121",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status Code 404, User Doesn't Exist\"] = responseCode.code = 404;"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{link}}/user/J4019",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"user",
+						"J4019"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PATCH Specific User 403",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "55312655-aed0-4556-8dfd-464a2faec9d0",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status Code 403\"] = responseCode.code === 403;"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"fname\": \"New Derek\",\n\t\"lname\": \"New Sun\",\n\t\"email\": \"New Email\"\n}"
+				},
+				"url": {
+					"raw": "{{link}}/user/{{POST_CORRECT_userID}}",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"user",
+						"{{POST_CORRECT_userID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PATCH Specific User Correct",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6a89b078-824e-4878-8429-2f1dd5cb9eda",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status Code 200\"] = responseCode.code === 200;",
+							"",
+							"let requestData = JSON.parse(request.data);",
+							"",
+							"let response = JSON.parse(responseBody);",
+							"",
+							"",
+							"tests[\"User First Name is Correct\"] = response[\"fname\"] === requestData[\"fname\"];",
+							"",
+							"tests[\"User Last Name is Correct\"] = response[\"lname\"] === requestData[\"lname\"];",
+							"",
+							"tests[\"Email is Correct\"] = response[\"email\"] === requestData[\"email\"];"
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{POST_CORRECT_clientSecret}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"fname\": \"New Derek\",\n\t\"lname\": \"New Sun\",\n\t\"email\": \"New Email\"\n}"
+				},
+				"url": {
+					"raw": "{{link}}/user/{{POST_CORRECT_userID}}",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"user",
+						"{{POST_CORRECT_userID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PATCH Specific User 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2389541a-42bb-4fac-a3c0-b3af01ebe11b",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status Code 404\"] = responseCode.code === 404;"
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"fname\": \"New Derek\",\n\t\"lname\": \"New Sun\",\n\t\"email\": \"New Email\"\n}"
+				},
+				"url": {
+					"raw": "{{link}}/user/12345",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"user",
+						"12345"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT Specific User Correct",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b8120d0c-add5-4366-9c3b-89f179e8abb1",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status Code 200\"] = responseCode.code === 200;",
+							"",
+							"let response = JSON.parse(responseBody);",
+							"",
+							"let requestData = JSON.parse(request.data);",
+							"",
+							"tests[\"Access Token Was Changed\"] = response[\"access_token\"] == requestData[\"access_token\"];",
+							"",
+							"pm.globals.set(\"PUT_CLIENT_TOKEN\", response[\"access_token\"]);"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"access_token\": \"THENEWTOKEN\"\n}"
+				},
+				"url": {
+					"raw": "{{link}}/user/{{POST_CORRECT_userID}}",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"user",
+						"{{POST_CORRECT_userID}}"
+					]
+				},
+				"description": "Return Status 200. Correct PUT Request. Only Access Token Changed."
+			},
+			"response": []
+		},
+		{
+			"name": "PUT Specific User 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b61cb25d-e24a-455f-a046-ad334b6c89fc",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status Code 400\"] = responseCode.code === 400;"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"access_token\": 45125\n}"
+				},
+				"url": {
+					"raw": "{{link}}/user/{{POST_CORRECT_userID}}",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"user",
+						"{{POST_CORRECT_userID}}"
+					]
+				},
+				"description": "Incorrect Data Type for Access Token"
+			},
+			"response": []
+		},
+		{
+			"name": "PUT Specific User 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a968a412-766a-455b-94dd-83c32aee618e",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status Code 404\"] = responseCode.code === 404;"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"access_token\": 45125\n}"
+				},
+				"url": {
+					"raw": "{{link}}/user/12345",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"user",
+						"12345"
+					]
+				},
+				"description": "User Does Not Exist"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Specific User 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "964a6fc9-889d-4f55-b5b0-f9f709ad42e4",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Response Code 404, User Does Not Exist\"] = responseCode.code === 404;",
+							"",
+							"pm.test(\"User Count Stayed the Same\", function(){",
+							"    pm.sendRequest(postman.getGlobalVariable(\"link\") +\"/user\", function (err, res){",
+							"    var responseJSON = res.json();",
+							"    newCount = responseJSON.length;",
+							"    var previousCount = pm.globals.get(\"previousUserCount\");",
+							"    pm.expect(newCount).to.equal(previousCount);",
+							"    pm.globals.unset(\"previousUserCount\");",
+							"    });",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "e805105a-4a11-4c6f-9d5d-1d0f02bb1f9f",
+						"type": "text/javascript",
+						"exec": [
+							"pm.sendRequest(postman.getGlobalVariable(\"link\") +\"/user\", function (err, res){",
+							"    var responseJSON = res.json();",
+							"    var count = responseJSON.length;",
+							"    pm.globals.set(\"previousUserCount\", count)",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{link}}/user/12345",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"user",
+						"12345"
+					]
+				},
+				"description": "User Does Not Exist"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Specific User 403",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "17816e53-b7fd-4708-977f-844a9c6ac9d1",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Response Code 404; Access Denied\"] = responseCode.code === 403;",
+							"",
+							"pm.test(\"User Count Stayed the Same\", function(){",
+							"    pm.sendRequest(postman.getGlobalVariable(\"link\") +\"/user\", function (err, res){",
+							"    var responseJSON = res.json();",
+							"    newCount = responseJSON.length;",
+							"    var previousCount = pm.globals.get(\"previousUserCount\");",
+							"    pm.expect(newCount).to.equal(previousCount);",
+							"    pm.globals.unset(\"previousUserCount\");",
+							"    });",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "6ad72c57-8516-47c0-920d-b1aa99c9ee97",
+						"type": "text/javascript",
+						"exec": [
+							"pm.sendRequest(postman.getGlobalVariable(\"link\") +\"/user\", function (err, res){",
+							"    var responseJSON = res.json();",
+							"    var count = responseJSON.length;",
+							"    pm.globals.set(\"previousUserCount\", count)",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{link}}/user/{{POST_CORRECT_userID}}",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"user",
+						"{{POST_CORRECT_userID}}"
+					]
+				},
+				"description": "User does not exist"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Specific User Correct",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "55e3a570-9bdc-4f78-a68a-c45fa65e2cfc",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Response Code 204, User Has Been Deleted\"] = responseCode.code === 204;",
+							"",
+							"pm.test(\"User Count Was Decremented\", function(){",
+							"    pm.sendRequest(postman.getGlobalVariable(\"link\") +\"/user\", function (err, res){",
+							"    var responseJSON = res.json();",
+							"    newCount = responseJSON.length;",
+							"    var previousCount = pm.globals.get(\"previousUserCount\");",
+							"    pm.expect(newCount).to.equal(previousCount - 1);",
+							"    pm.globals.unset(\"previousUserCount\");",
+							"    });",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "8cf8a319-2bdb-4620-bdeb-6c5db6683f43",
+						"type": "text/javascript",
+						"exec": [
+							"pm.sendRequest(postman.getGlobalVariable(\"link\") +\"/user\", function (err, res){",
+							"    var responseJSON = res.json();",
+							"    var count = responseJSON.length;",
+							"    pm.globals.set(\"previousUserCount\", count)",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{PUT_CLIENT_TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{link}}/user/{{POST_CORRECT_userID}}",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"user",
+						"{{POST_CORRECT_userID}}"
+					]
+				},
+				"description": "User Was Deleted, User Count Decremented."
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Portfolio",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f85416ad-b9ac-4c4f-b6f2-93e240ceb13a",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status Code 200\"] = responseCode.code === 200;"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{link}}/portfolio",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"portfolio"
+					]
+				},
+				"description": "Status Code 200"
+			},
+			"response": []
+		},
+		{
+			"name": "Post Portfolio Correct",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "8b4e19b3-a1e3-483e-b2aa-a79f88973971",
+						"type": "text/javascript",
+						"exec": [
+							"pm.sendRequest(postman.getGlobalVariable(\"link\") +\"/portfolio\", function (err, res){",
+							"    var response = res.json();",
+							"    var count = response.length;",
+							"    pm.globals.set(\"previousPortfolioCount\", count)",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "bf048d12-c4a7-4263-836f-f6395ca1afc4",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Response Status is 201\"] = responseCode.code === 201;",
+							"",
+							"pm.test(\"Portfolio Count Was Incremented\", function(){",
+							"    pm.sendRequest(postman.getGlobalVariable(\"link\") +\"/portfolio\", function (err, res){",
+							"    var responseJSON = res.json();",
+							"    newCount = responseJSON.length;",
+							"    var previousCount = pm.globals.get(\"previousPortfolioCount\");",
+							"    pm.expect(newCount).to.equal(previousCount + 1);",
+							"    pm.globals.unset(\"previousPortfolioCount\");",
+							"    });",
+							"});",
+							"",
+							"//Returns Request Data as an Object",
+							"let requestData = JSON.parse(request.data);",
+							"",
+							"let response = JSON.parse(responseBody);",
+							"",
+							"tests[\"Portfolio Name is Correct\"] = response[\"name\"] == requestData[\"name\"];",
+							"",
+							"pm.globals.set(\"CORRECT_PORTFOLIO_NAME\", response[\"name\"]);",
+							"pm.globals.set(\"CORRECT_PORTFOLIO_ID\", response[\"id\"]);"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"New Portfolio\",\n\t\"stock_portfolio\": [{\"ticker\": \"A\", \"amount\": 4}]\n}"
+				},
+				"url": {
+					"raw": "{{link}}/portfolio",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"portfolio"
+					]
+				},
+				"description": "Status Code 201, Portfolio Count Incremented."
+			},
+			"response": []
+		},
+		{
+			"name": "POST Portfolio, Invalid Type",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b1a74e5f-2977-4b64-a544-501971c67c2b",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Response Code 400, Invalid POST body\"] = responseCode.code = 400;",
+							"",
+							"pm.test(\"Portfolio Count Stayed the Same\", function(){",
+							"    pm.sendRequest(postman.getGlobalVariable(\"link\") +\"/portfolio\", function (err, res){",
+							"    var responseJSON = res.json();",
+							"    newCount = responseJSON.length;",
+							"    var previousCount = pm.globals.get(\"previousPortfolioCount\");",
+							"    pm.expect(newCount).to.equal(previousCount);",
+							"    pm.globals.unset(\"previousPortfolioCount\");",
+							"    });",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "fdfc52e1-a89f-4dbf-a670-a926df3f081e",
+						"type": "text/javascript",
+						"exec": [
+							"pm.sendRequest(postman.getGlobalVariable(\"link\") +\"/portfolio\", function (err, res){",
+							"    var response = res.json();",
+							"    var count = response.length;",
+							"    pm.globals.set(\"previousPortfolioCount\", count)",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": 21432\n}"
+				},
+				"url": {
+					"raw": "{{link}}/portfolio",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"portfolio"
+					]
+				},
+				"description": "Response Code 400."
+			},
+			"response": []
+		},
+		{
+			"name": "POST Portfolio Invalid Stock Portfolio",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "5df7430c-24a5-4fb4-b112-8022e2a1e87b",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Response Code 400, Invalid POST body\"] = responseCode.code = 400;",
+							"",
+							"pm.test(\"Portfolio Count Stayed the Same\", function(){",
+							"    pm.sendRequest(postman.getGlobalVariable(\"link\") +\"/portfolio\", function (err, res){",
+							"    var responseJSON = res.json();",
+							"    newCount = responseJSON.length;",
+							"    var previousCount = pm.globals.get(\"previousPortfolioCount\");",
+							"    pm.expect(newCount).to.equal(previousCount);",
+							"    pm.globals.unset(\"previousPortfolioCount\");",
+							"    });",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "8839f07e-7d5d-4ac6-9609-752d0914c9fd",
+						"type": "text/javascript",
+						"exec": [
+							"pm.sendRequest(postman.getGlobalVariable(\"link\") +\"/portfolio\", function (err, res){",
+							"    var response = res.json();",
+							"    var count = response.length;",
+							"    pm.globals.set(\"previousPortfolioCount\", count)",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"Test Portfolio\",\n\t\"stock_portfolio\": {\"ticker\": \"Not a Real Ticker\", \"amount\": 10}\n}"
+				},
+				"url": {
+					"raw": "{{link}}/portfolio",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"portfolio"
+					]
+				},
+				"description": "Status Code 400."
+			},
+			"response": []
+		},
+		{
+			"name": "GET Specific Portfolio Correct",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "1e5d18a1-0f23-4863-adb2-8e7f3a8384d3",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Response Code 200\"] = responseCode.code == 200;"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{link}}/portfolio/{{CORRECT_PORTFOLIO_ID}}",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"portfolio",
+						"{{CORRECT_PORTFOLIO_ID}}"
+					]
+				},
+				"description": "Response Code 200."
+			},
+			"response": []
+		},
+		{
+			"name": "GET Specific Portfolio 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "1b9c0476-d702-4d8c-9b1e-952083c74c74",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Response Code 404, Portfolio Doesn't Exist\"] = responseCode.code == 404;"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{link}}/portfolio/48120",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"portfolio",
+						"48120"
+					]
+				},
+				"description": "Portfolio Does Not Exist"
+			},
+			"response": []
+		},
+		{
+			"name": "PATCH Specific User Correct",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7b7f410e-c5c1-48be-ab66-1b2a83076176",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status Code 200\"] = responseCode.code === 200;"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"LUL\"\n}"
+				},
+				"url": {
+					"raw": "{{link}}/portfolio/{{CORRECT_PORTFOLIO_ID}}",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"portfolio",
+						"{{CORRECT_PORTFOLIO_ID}}"
+					]
+				},
+				"description": "Response Code 200."
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE Specific Portfolio 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e24835e8-cfed-4f84-80cc-78f68e50eb4b",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status Code 404\"] = responseCode.code === 404;",
+							"",
+							"pm.test(\"Portfolio Count Stayed the Same\", function(){",
+							"    pm.sendRequest(postman.getGlobalVariable(\"link\") +\"/portfolio\", function (err, res){",
+							"    var responseJSON = res.json();",
+							"    newCount = responseJSON.length;",
+							"    var previousCount = pm.globals.get(\"previousPortfolioCount\");",
+							"    pm.expect(newCount).to.equal(previousCount);",
+							"    pm.globals.unset(\"previousPortfolioCount\");",
+							"    });",
+							"});",
+							""
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "3f912e32-df73-4636-b35e-89be7affa5ee",
+						"type": "text/javascript",
+						"exec": [
+							"pm.sendRequest(postman.getGlobalVariable(\"link\") +\"/portfolio\", function (err, res){",
+							"    var response = res.json();",
+							"    var count = response.length;",
+							"    pm.globals.set(\"previousPortfolioCount\", count)",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{link}}/portfolio/48192",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"portfolio",
+						"48192"
+					]
+				},
+				"description": "Response Code 404"
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE Specific Portfolio Correct",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "248cac8d-9bbc-4266-82ff-8bb8c924e632",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status Code 204\"] = responseCode.code === 204;",
+							"",
+							"pm.test(\"Portfolio Count Was Decremented\", function(){",
+							"    pm.sendRequest(postman.getGlobalVariable(\"link\") +\"/portfolio\", function (err, res){",
+							"    var responseJSON = res.json();",
+							"    newCount = responseJSON.length;",
+							"    var previousCount = pm.globals.get(\"previousPortfolioCount\");",
+							"    pm.expect(newCount).to.equal(previousCount - 1);",
+							"    pm.globals.unset(\"previousPortfolioCount\");",
+							"    });",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "826822fd-b3aa-47b0-a1b3-7c0f85b64e3a",
+						"type": "text/javascript",
+						"exec": [
+							"pm.sendRequest(postman.getGlobalVariable(\"link\") +\"/portfolio\", function (err, res){",
+							"    var response = res.json();",
+							"    var count = response.length;",
+							"    pm.globals.set(\"previousPortfolioCount\", count)",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{link}}/portfolio/{{CORRECT_PORTFOLIO_ID}}",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"portfolio",
+						"{{CORRECT_PORTFOLIO_ID}}"
+					]
+				},
+				"description": "Status Code 204."
+			},
+			"response": []
+		},
+		{
+			"name": "Create User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8eac4729-21d8-42ed-997f-97b192ef365d",
+						"type": "text/javascript",
+						"exec": [
+							"let response = JSON.parse(responseBody);",
+							"",
+							"pm.globals.set(\"SpecificUserID\", response[\"id\"]);",
+							"pm.globals.set(\"SpecificUserToken\", response[\"access_token\"]);"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"fname\": \"Derek\",\n    \"lname\": \"Sun\",\n    \"email\": \"sunde@oregonstate.edu\",\n    \"access_token\": \"Password\",\n    \"userURL\": \"google.com\"\n}"
+				},
+				"url": {
+					"raw": "{{link}}/user",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"user"
+					]
+				},
+				"description": "Create User and Store ID for Specific Portfolio Handler"
+			},
+			"response": []
+		},
+		{
+			"name": "Create Portfolio for Further Testing",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "613cfb3c-b543-4c6e-bc39-4765ab7245d9",
+						"type": "text/javascript",
+						"exec": [
+							"let response = JSON.parse(responseBody);",
+							"",
+							"pm.globals.set(\"SpecificPortfolioID\", response[\"id\"]);"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"New Portfolio\",\n\t\"stock_portfolio\": [{\"ticker\": \"A\", \"amount\": 4}]\n}"
+				},
+				"url": {
+					"raw": "{{link}}/portfolio",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"portfolio"
+					]
+				},
+				"description": "Create a New Portfolio for Testing"
+			},
+			"response": []
+		},
+		{
+			"name": "PUT Portfolio to User 403",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "fef2ccd7-3c15-4873-b2ff-ad3e4bbe520f",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status Code 403, Unauthorized Access\"] = responseCode.code = 403;"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{link}}/user/{{SpecificUserID}}/portfolio/{{SpecificPortfolioID}}",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"user",
+						"{{SpecificUserID}}",
+						"portfolio",
+						"{{SpecificPortfolioID}}"
+					]
+				},
+				"description": "Unauthorized Access Status Code 403."
+			},
+			"response": []
+		},
+		{
+			"name": "PUT Portfolio to User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7e7f2377-2438-47ca-b644-fc61f733b263",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status Code 204\"] = responseCode.code = 204;"
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{SpecificUserToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{link}}/user/{{SpecificUserID}}/portfolio/{{SpecificPortfolioID}}",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"user",
+						"{{SpecificUserID}}",
+						"portfolio",
+						"{{SpecificPortfolioID}}"
+					]
+				},
+				"description": "Response Code 204."
+			},
+			"response": []
+		},
+		{
+			"name": "GET Specific Portfolio (Assigned) 403",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "fa8c0844-9642-4f3e-8696-fe987c698e85",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Response Code 403, Unauthorized Access\"] = responseCode.code === 403;"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{link}}/portfolio/{{SpecificPortfolioID}}",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"portfolio",
+						"{{SpecificPortfolioID}}"
+					]
+				},
+				"description": "Response Code 403."
+			},
+			"response": []
+		},
+		{
+			"name": "GET Portfolio Assigned to User Correct",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "1b9afddb-fc36-438d-a410-ed40edaef143",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Response Code 200\"] = responseCode.code === 200;",
+							"",
+							"let response = JSON.parse(responseBody);",
+							"",
+							"var ownerID = pm.globals.get(\"SpecificUserID\")",
+							"",
+							"tests[\"Owner was correctly assigned\"] = response[\"owner\"] == ownerID;"
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{SpecificUserToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{link}}/portfolio/{{SpecificPortfolioID}}",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"portfolio",
+						"{{SpecificPortfolioID}}"
+					]
+				},
+				"description": "Response Code 200."
+			},
+			"response": []
+		},
+		{
+			"name": "Check Portfolio Added to User Portfolio",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "70e8ce15-f7cd-452b-a743-80d9538d39e6",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Response Code 200\"] = responseCode.code === 200;",
+							"",
+							"let response = JSON.parse(responseBody);",
+							"",
+							"tests[\"User Portfolio Includes Newly Added Portolio\"] = response[\"portfolio\"].includes(pm.globals.get(\"SpecificPortfolioID\"));"
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{SpecificUserToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{link}}/user/{{SpecificUserID}}",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"user",
+						"{{SpecificUserID}}"
+					]
+				},
+				"description": "Check Portfolio Added to User Portfolio"
+			},
+			"response": []
+		},
+		{
+			"name": "PATCH Assigned Portfolio 403",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "759f8e16-20b4-40d4-8138-05fbae63e935",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status Code 403\"] = responseCode.code = 403;"
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"New Portfolio Name\"\n}"
+				},
+				"url": {
+					"raw": "{{link}}/user/{{SpecificUserID}}/portfolio/{{SpecificPortfolioID}}",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"user",
+						"{{SpecificUserID}}",
+						"portfolio",
+						"{{SpecificPortfolioID}}"
+					]
+				},
+				"description": "Response Code 403."
+			},
+			"response": []
+		},
+		{
+			"name": "PATCH Unknown Portfolio",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4157edf1-dd3d-4782-90ec-7cebf95cb393",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status Code 404\"] = responseCode.code = 404;"
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"New Portfolio Name\"\n}"
+				},
+				"url": {
+					"raw": "{{link}}/user/{{SpecificUserID}}/portfolio/21412",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"user",
+						"{{SpecificUserID}}",
+						"portfolio",
+						"21412"
+					]
+				},
+				"description": "Response Code 404"
+			},
+			"response": []
+		},
+		{
+			"name": "PATCH Portfolio Assigned to User Success",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ef1a0778-70c8-4885-9e96-bde0d0667511",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status Code 200\"] = responseCode.code = 200;",
+							"",
+							"let response = JSON.parse(responseBody);",
+							"",
+							"let requestData = JSON.parse(request.data);",
+							"",
+							"tests[\"Name was Changed\"] = response[\"name\"] = requestData[\"name\"]"
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{SpecificUserToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"New Portfolio Name\"\n}"
+				},
+				"url": {
+					"raw": "{{link}}/user/{{SpecificUserID}}/portfolio/{{SpecificPortfolioID}}",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"user",
+						"{{SpecificUserID}}",
+						"portfolio",
+						"{{SpecificPortfolioID}}"
+					]
+				},
+				"description": "Change Portfolio Information"
+			},
+			"response": []
+		},
+		{
+			"name": "PATCH Assigned Portfolio 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b67e7697-1e60-4780-a9e5-da3c1225225c",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status Code 400\"] = responseCode.code = 400;",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{SpecificUserToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": 28\n}"
+				},
+				"url": {
+					"raw": "{{link}}/user/{{SpecificUserID}}/portfolio/{{SpecificPortfolioID}}",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"user",
+						"{{SpecificUserID}}",
+						"portfolio",
+						"{{SpecificPortfolioID}}"
+					]
+				},
+				"description": "PATCH with invalid data"
+			},
+			"response": []
+		},
+		{
+			"name": "REMOVE Assigned Portfolio 403",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "69492664-52bf-43f7-9f9c-3bb19c7be8c7",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status Code 403\"] = responseCode.code = 403;",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{link}}/user/{{SpecificUserID}}/portfolio/{{SpecificPortfolioID}}",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"user",
+						"{{SpecificUserID}}",
+						"portfolio",
+						"{{SpecificPortfolioID}}"
+					]
+				},
+				"description": "Unauthorized Access"
+			},
+			"response": []
+		},
+		{
+			"name": "REMOVE Assigned Portfolio 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0c89b6fa-45ba-43b2-88ff-83e4727367bc",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status Code 404\"] = responseCode.code = 404;",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{link}}/user/{{SpecificUserID}}/portfolio/42145",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"user",
+						"{{SpecificUserID}}",
+						"portfolio",
+						"42145"
+					]
+				},
+				"description": "Does Not Exist"
+			},
+			"response": []
+		},
+		{
+			"name": "REMOVE Assigned Portfolio Success",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "541c6e7b-7d55-4da4-9862-9ec6051dfd2d",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Response Code 204, Portfolio Successfully Removed\"] = responseCode.code === 204;",
+							"",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{SpecificUserToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{link}}/user/{{SpecificUserID}}/portfolio/{{SpecificPortfolioID}}",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"user",
+						"{{SpecificUserID}}",
+						"portfolio",
+						"{{SpecificPortfolioID}}"
+					]
+				},
+				"description": "Status Code 204"
+			},
+			"response": []
+		},
+		{
+			"name": "Check if Portfolio is Free",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b2b5df6c-5a19-420f-933c-5a4aabb9b5a6",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Response Code 200\"] = responseCode.code === 200;",
+							"",
+							"let response = JSON.parse(responseBody);",
+							"",
+							"tests[\"Portfolio Doesn't Belong to an Owner\"] = response.owner === null;"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{link}}/portfolio/{{SpecificPortfolioID}}",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"portfolio",
+						"{{SpecificPortfolioID}}"
+					]
+				},
+				"description": "Response Code 200."
+			},
+			"response": []
+		},
+		{
+			"name": "Check That Portfolio Was Removed",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ca350f0a-5412-4fbe-b065-b98356ec0a01",
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Response Code 200\"] = responseCode.code === 200;",
+							"",
+							"let response = JSON.parse(responseBody);",
+							"",
+							"tests[\"User Portfolio Does Not Have Old Portfolio\"] = response[\"portfolio\"].includes(pm.globals.get(\"SpecificPortfolioID\")) === false;"
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{SpecificUserToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{link}}/user/{{SpecificUserID}}",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"user",
+						"{{SpecificUserID}}"
+					]
+				},
+				"description": "Status Code 200."
+			},
+			"response": []
+		},
+		{
+			"name": "Clear DATABASE",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{link}}/clearDB",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"clearDB"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Clear DATABASE",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{link}}/clearDB",
+					"host": [
+						"{{link}}"
+					],
+					"path": [
+						"clearDB"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
